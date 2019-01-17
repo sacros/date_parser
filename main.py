@@ -3,10 +3,12 @@ import csv
 import re
 
 def is_empty(inp):
-    return True if inp in ('', 0, '0', None) else False
+    return True if inp in ('', 0, '0', '-', None) else False
+
 
 def has_alpha(inp):
-  return True if re.match(".*[a-zA-Z]+.*$", str(inp)) else False
+    return True if re.match(".*[a-zA-Z]+.*$", str(inp)) else False
+
 
 """is_empty Test Cases"""
 # print(is_empty(""))
@@ -33,26 +35,38 @@ original_reader = csv.reader(original_f, delimiter=',', quotechar='"')
 # with open('eggs.csv', newline='') as csvfile:
 #   spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
 
-empty_f = open('filter1/empty.csv', 'a')
+empty_f = open('filter1/empty.csv', 'w+')
 empty_writer = csv.writer(empty_f, dialect='excel')
 
-# empty_reader = csv.reader(empty_f)
+with_alpha_f = open('filter1/with_alpha.csv', 'w+')
+with_alpha_writer = csv.writer(with_alpha_f, dialect='excel')
 
-with_alpha_f = open('filter1/with_alpha.csv', 'w')
-# with_alpha_reader = csv.reader(with_alpha_f)
+without_alpha_f = open('filter1/without_alpha.csv', 'w+')
+without_alpha_writer = csv.writer(without_alpha_f, dialect='excel')
 
-without_alpha_f = open('filter1/without_alpha.csv', 'w')
-# without_alpha_reader = csv.reader(without_alpha_f)
+listfile = open('dates', 'w+')
 
-# print(sum(1 for row in original_reader))
+
+count = 0
+dates = []
 
 for row in original_reader:
-    print(f"got: {row} : {len(row)}")
-    print(type(row))
-    print(len(row))
-    # empty_writer.writerow(row)
+    count += 1
+    if count == 1:
+      continue  
+    # listfile.write(row[1]+'\n')
+    dates.append(row[1])
 
-    # empty_f.write(row,'\n')
+    print(f'processing row {count}')
+    # for index, cell in enumerate(row):
+    #   row[index] = cell.replace("\n", "$")
 
-    # empty_writer.writerow(row)
-
+    if is_empty(row[1]):
+        empty_writer.writerow(row)
+        # print(f'setting row#{count}, {row} to empty')        
+    elif has_alpha(row[1]):
+        with_alpha_writer.writerow(row)
+        # print(f'setting row#{count}, {row} to with_alpha')        
+    else:
+        without_alpha_writer.writerow(row)
+        # print(f'setting row#{count}, {row} to without_alpha')        
